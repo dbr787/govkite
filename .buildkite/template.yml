@@ -1,0 +1,5 @@
+name: "govkite"
+description: "Buildkite Pipeline Governance Demo"
+steps:
+  - command: ".buildkite/upload.sh"
+    label: ":pipeline:"
