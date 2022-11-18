@@ -1,10 +1,16 @@
-governed_pipeline_upload () {
-  if [ $# -eq 0 ]
-  then
-    echo "No arguments supplied"
-  else
-    echo "$# arguments supplied"
-  fi
-}
+#!/bin/bash
+set -euo pipefail
 
-governed_pipeline_upload
+original_json="$1"
+echo $1
+
+# if build author is dependabot upsert priority = -1 into all command steps
+for line in "$(grep "^BUILDKITE_BUILD_AUTHOR=" "${BUILDKITE_ENV_FILE}")"
+do
+  author="$(echo "${line}" | cut -d= -f2)"
+  if [ "${author}" == "Dependabot" ]
+  then
+    yq -o=json "(.steps[] | select(has(\"command\"))).priority = -1" $original_json
+    exit 0
+  fi
+done
